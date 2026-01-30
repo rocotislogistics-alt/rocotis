@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="Rocoti's"/>
+<meta name="theme-color" content="#0a1628"/>
+<title>Rocoti's Business Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --navy:#0a1628;--navy2:#132240;--navy3:#1c3058;--navy4:#243d6a;
+  --gold:#b8822a;--gold2:#d4a54e;--gold3:#f0c46a;
+  --silver:#f0f4f8;--line:#dce4ed;--muted:#6b7f96;--text:#0d1f35;--sub:#3d5068;
+  --red:#c0392b;--red-bg:#fdf0ef;--red-bdr:#f5c6c2;
+  --grn:#1a6b3a;--grn-bg:#e8f5ee;--grn-bdr:#a8dfc0;
+  --amb:#b45309;--amb-bg:#fffbeb;--amb-bdr:#fcd34d;
+  --blue:#1d4ed8;--blue-bg:#eff6ff;--blue-bdr:#93c5fd;
+  --safe:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--navy);color:var(--text);-webkit-font-smoothing:antialiased;overscroll-behavior:none;}
+.app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;}
+/* TOPBAR */
+.topbar{background:var(--navy2);border-bottom:2px solid var(--gold);padding:12px 16px;flex-shrink:0;display:flex;align-items:center;gap:10px;}
+.tlogo{width:40px;height:40px;background:white;border-radius:50%;border:2px solid var(--gold2);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.tname{font-family:'Playfair Display',serif;font-size:16px;color:white;line-height:1.1;}
+.tsub{font-size:10px;color:var(--gold2);font-weight:600;letter-spacing:1px;text-transform:uppercase;}
+.icon-btn{width:34px;height:34px;border-radius:8px;background:var(--navy3);border:1px solid #ffffff18;color:var(--gold2);font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent;flex-shrink:0;}
+.icon-btn:active{background:var(--gold);color:white;}
+/* NAV */
+.bnav{background:var(--navy2);border-top:1px solid var(--navy3);display:flex;flex-shrink:0;padding-bottom:var(--safe);overflow-x:auto;}
+.ni{flex:1;min-width:58px;display:flex;flex-direction:column;align-items:center;padding:7px 2px 5px;cursor:pointer;-webkit-tap-highlight-color:transparent;color:var(--muted);font-size:9px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;}
+.ni-icon{font-size:17px;margin-bottom:2px;line-height:1;}
+.ni.active{color:var(--gold2);}
+/* PAGES */
+.pages{flex:1;overflow:hidden;position:relative;}
+.page{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;opacity:0;pointer-events:none;transform:translateY(8px);transition:opacity .18s,transform .18s;}
+.page.active{opacity:1;pointer-events:all;transform:translateY(0);}
+.pp{padding:14px;padding-bottom:30px;}
+/* SHARED */
+.sec-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin:14px 0 9px;}
+.cw{background:white;border-radius:13px;overflow:hidden;box-shadow:0 2px 12px #0002;margin-bottom:10px;}
+.cn{background:var(--navy2);border-radius:13px;overflow:hidden;margin-bottom:10px;border:1px solid var(--navy3);}
+.ri{padding:12px 14px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--line);}
+.ri:last-child{border-bottom:none;}
+.rico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.rinfo{flex:1;min-width:0;}
+.rmain{font-size:14px;font-weight:600;color:var(--text);}
+.rsub{font-size:11px;color:var(--muted);margin-top:1px;}
+.rval{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;}
+.pill{display:inline-flex;align-items:center;padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.4px;}
+.pg{background:var(--grn-bg);color:var(--grn);border:1px solid var(--grn-bdr);}
+.pr{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bdr);}
+.pa{background:var(--amb-bg);color:var(--amb);border:1px solid var(--amb-bdr);}
+.pb{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-bdr);}
+.es{text-align:center;padding:28px 16px;color:var(--muted);font-size:13px;}
+.ei{font-size:34px;margin-bottom:8px;opacity:.5;}
+/* STAT CARDS */
+.hero{background:linear-gradient(135deg,var(--navy2),var(--navy3));border-radius:15px;padding:17px;margin-bottom:11px;border:1px solid #ffffff08;position:relative;overflow:hidden;}
+.hero::after{content:attr(data-e);position:absolute;right:14px;top:10px;font-size:36px;opacity:.12;}
+.hlbl{font-size:10px;color:var(--gold2);text-transform:uppercase;letter-spacing:1.5px;font-weight:700;margin-bottom:3px;}
+.hval{font-family:'Playfair Display',serif;font-size:30px;color:white;line-height:1;}
+.hsub{font-size:11px;color:var(--muted);margin-top:4px;}
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px;}
+.sm{background:var(--navy2);border-radius:11px;padding:12px;border:1px solid var(--navy3);}
+.sml{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-weight:700;margin-bottom:4px;}
+.smv{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:white;}
+.smv.G{color:#a8dfc0;}.smv.R{color:#f5a09a;}.smv.A{color:var(--gold2);}.smv.B{color:#93c5fd;}
+/* BAR CHART */
+.bwrap{padding:13px;}
+.brow{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.bmo{font-size:11px;font-weight:600;color:var(--muted);width:26px;flex-shrink:0;}
+.btrack{flex:1;background:var(--navy3);border-radius:3px;height:20px;overflow:hidden;}
+.bfill{height:100%;border-radius:3px;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;transition:width .4s cubic-bezier(.4,0,.2,1);}
+.bfuel{background:linear-gradient(90deg,#1d4ed8,#60a5fa);}
+.bmaint{background:linear-gradient(90deg,#b8822a,#f0c46a);}
+.bexp{background:linear-gradient(90deg,#6d28d9,#c4b5fd);}
+.blbl{font-family:'DM Mono',monospace;font-size:10px;color:white;font-weight:600;}
+.bamt{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);width:58px;text-align:right;flex-shrink:0;}
+/* FAB */
+.fab{position:fixed;bottom:calc(68px + var(--safe));right:16px;width:50px;height:50px;border-radius:50%;background:var(--gold);color:white;font-size:25px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px #0005;cursor:pointer;-webkit-tap-highlight-color:transparent;z-index:50;border:none;transition:transform .15s;}
+.fab:active{transform:scale(.92);}
+/* INPUTS */
+.inp{width:100%;background:var(--silver);border:1.5px solid var(--line);border-radius:9px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--text);outline:none;-webkit-appearance:none;transition:border-color .15s;}
+.inp:focus{border-color:var(--gold);background:white;}
+.inp::placeholder{color:#c0c8d4;}
+.ilbl{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:4px;}
+.fg{margin-bottom:11px;}
+.fr{display:flex;gap:9px;}.fr .fg{flex:1;}
+/* SHEET */
+.bkdrop{position:fixed;inset:0;background:#000b;z-index:100;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .2s;}
+.bkdrop.open{opacity:1;pointer-events:all;}
+.sheet{background:white;border-radius:20px 20px 0 0;width:100%;max-height:91dvh;overflow-y:auto;transform:translateY(100%);transition:transform .25s cubic-bezier(.32,0,.67,0);padding:0 0 calc(20px + var(--safe));}
+.bkdrop.open .sheet{transform:translateY(0);}
+.shandle{width:38px;height:4px;background:var(--line);border-radius:2px;margin:13px auto 3px;}
+.shead{padding:8px 18px 14px;border-bottom:1px solid var(--line);}
+.stitle{font-family:'Playfair Display',serif;font-size:19px;color:var(--navy);}
+.sbody{padding:14px 18px;}
+.sacts{display:flex;gap:9px;padding:0 18px;}
+.sbtn{flex:1;padding:13px;border-radius:10px;border:none;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.sbnc{background:var(--silver);color:var(--muted);}
+.sbns{background:var(--gold);color:white;}
+/* DUE CARD */
+.duc{background:white;border-radius:12px;padding:12px;margin-bottom:8px;display:flex;gap:11px;align-items:flex-start;box-shadow:0 1px 8px #0002;}
+.duico{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.dui{flex:1;min-width:0;}
+.dut{font-size:14px;font-weight:600;color:var(--text);}
+.dud{font-size:11px;color:var(--muted);margin-top:1px;}
+.duc2{font-family:'DM Mono',monospace;font-size:12px;color:var(--sub);margin-top:2px;}
+/* TOAST */
+.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(16px);background:var(--navy2);color:white;padding:9px 18px;border-radius:24px;font-size:13px;font-weight:500;border:1px solid var(--gold);opacity:0;transition:all .22s;pointer-events:none;white-space:nowrap;z-index:999;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+/* FUEL CALCULATOR */
+.fuel-calc-card{background:white;border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 2px 14px #0003;border-top:4px solid var(--blue);}
+.fc-truck-badge{background:var(--blue-bg);color:var(--blue);font-size:11px;font-weight:700;padding:5px 11px;border-radius:20px;display:inline-block;margin-bottom:14px;border:1px solid var(--blue-bdr);}
+.fc-unit-row{display:flex;gap:0;background:var(--silver);border-radius:9px;padding:3px;margin-bottom:13px;}
+.fc-unit-btn{flex:1;padding:7px;border:none;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;background:transparent;color:var(--muted);transition:all .15s;-webkit-tap-highlight-color:transparent;}
+.fc-unit-btn.active{background:white;color:var(--navy);box-shadow:0 1px 6px #0002;}
+.fc-field-row{display:flex;gap:10px;margin-bottom:13px;}
+.fc-field{flex:1;}
+.fc-label{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;}
+.fc-input-wrap{position:relative;}
+.fc-input{width:100%;background:var(--silver);border:1.5px solid var(--line);border-radius:9px;padding:10px 38px 10px 12px;font-family:'DM Mono',monospace;font-size:15px;font-weight:600;color:var(--text);outline:none;-webkit-appearance:none;}
+.fc-input:focus{border-color:var(--blue);background:white;}
+.fc-input::placeholder{color:#c8d4e0;font-weight:400;}
+.fc-unit-tag{position:absolute;right:11px;top:50%;transform:translateY(-50%);font-size:10px;font-weight:700;color:var(--muted);}
+.fc-load-row{display:flex;gap:8px;margin-top:6px;}
+.fc-load-btn{flex:1;padding:10px 4px;border:2px solid var(--line);border-radius:10px;background:var(--silver);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:var(--sub);cursor:pointer;text-align:center;line-height:1.4;-webkit-tap-highlight-color:transparent;transition:all .15s;}
+.fc-load-btn small{font-size:9px;color:var(--muted);font-weight:500;}
+.fc-load-btn.active{border-color:var(--blue);background:var(--blue-bg);color:var(--blue);}
+.fc-load-btn.active small{color:var(--blue);}
+.fc-results{background:linear-gradient(135deg,var(--navy2),var(--navy3));border-radius:12px;padding:14px;margin-top:4px;}
+.fc-res-row{display:flex;gap:10px;justify-content:center;}
+.fc-res-box{flex:1;text-align:center;padding:4px 0;}
+.fc-res-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:4px;}
+.fc-res-val{font-family:'Playfair Display',serif;font-size:22px;color:white;line-height:1;}
+.fc-res-val.blue{color:#93c5fd;}
+.fc-res-val.gold{color:var(--gold2);}
+.fc-res-sub{font-size:10px;color:var(--muted);margin-top:3px;}
+.fc-tip{margin-top:12px;background:#ffffff0f;border-radius:8px;padding:9px 12px;font-size:12px;color:var(--muted);line-height:1.5;border-left:3px solid var(--gold);}
+/* FUEL STRIP INSIDE CARD */
+.fuel-strip{background:#f0f6ff;border:1.5px solid #bfdbfe;border-radius:10px;padding:11px 12px;margin-bottom:10px;}
+.fuel-strip-title{font-size:10px;font-weight:700;color:#1d4ed8;text-transform:uppercase;letter-spacing:.7px;margin-bottom:9px;}
+.load-sel{display:flex;gap:6px;margin-bottom:0;}
+.lbtn{flex:1;padding:7px 4px;border:1.5px solid var(--line);border-radius:9px;background:white;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;color:var(--sub);cursor:pointer;text-align:center;line-height:1.5;-webkit-tap-highlight-color:transparent;transition:all .15s;}
+.lbtn small{font-size:9px;color:var(--muted);font-weight:500;display:block;}
+.lbtn.active{border-color:#3b82f6;background:#eff6ff;color:#1d4ed8;}
+.lbtn.active small{color:#3b82f6;}
+.fuel-result{display:flex;align-items:center;justify-content:space-between;background:#1c3058;border-radius:9px;padding:10px 13px;margin-top:10px;gap:4px;}
+.fr-box{display:flex;flex-direction:column;align-items:center;flex:1;}
+.fr-num{font-family:'DM Mono',monospace;font-size:16px;font-weight:700;color:white;line-height:1;}
+.fr-num.gold{color:var(--gold2);}
+.fr-num.blue{color:#93c5fd;}
+.fr-lbl{font-size:9px;color:var(--muted);margin-top:3px;text-align:center;line-height:1.2;}
+.fr-div{width:1px;height:28px;background:#ffffff20;flex-shrink:0;}
+/* ESTIMATOR */
+.rstrip{background:var(--navy2);border:1px solid var(--navy3);border-left:3px solid var(--gold);border-radius:10px;padding:11px 13px;margin-bottom:11px;}
+.rstit{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px;}
+.rrow{display:flex;gap:9px;}
+.rf{flex:1;}
+.rf label{font-size:10px;color:var(--muted);display:block;margin-bottom:3px;}
+.rf input{width:100%;background:var(--navy3);border:1px solid #ffffff10;border-radius:7px;color:var(--gold2);font-family:'DM Mono',monospace;font-size:14px;padding:7px 10px;outline:none;-webkit-appearance:none;text-align:center;}
+.rf input:focus{border-color:var(--gold);}
+.oc{background:white;border-radius:13px;margin-bottom:9px;overflow:hidden;box-shadow:0 2px 12px #0002;}
+.ch{background:var(--navy2);padding:9px 11px;display:flex;align-items:center;gap:8px;border-left:4px solid var(--gold);}
+.cn2{width:23px;height:23px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0;}
+.cmi{flex:1;background:transparent;border:none;color:white;font-size:14px;font-weight:600;outline:none;min-width:0;}
+.cmi::placeholder{color:#4a6a8a;}
+.cdel{background:transparent;border:none;color:#4a6a8a;font-size:17px;cursor:pointer;padding:3px;}
+.cdel:active{color:var(--red);}
+.cb{padding:11px;}
+.cfr{display:flex;gap:7px;margin-bottom:7px;}
+.cf{flex:1;}
+.cf label{display:block;font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px;}
+.cf input{width:100%;background:var(--silver);border:1.5px solid var(--line);border-radius:8px;padding:8px 9px;font-family:'DM Mono',monospace;font-size:13px;color:var(--text);outline:none;-webkit-appearance:none;}
+.cf input:focus{border-color:var(--gold);background:white;}
+.cf input::placeholder{color:#c0c8d4;}
+.resb{background:var(--silver);border-radius:9px;padding:9px 11px;display:flex;align-items:center;justify-content:space-between;gap:5px;border:1.5px solid var(--line);transition:all .2s;}
+.resb.rg{background:var(--grn-bg);border-color:var(--grn-bdr);}
+.resb.rr{background:var(--red-bg);border-color:var(--red-bdr);}
+.resb.ra{background:var(--amb-bg);border-color:var(--amb-bdr);}
+.rcol{display:flex;flex-direction:column;align-items:center;}
+.rlbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-bottom:1px;}
+.rv{font-family:'DM Mono',monospace;font-size:12px;color:var(--sub);}
+.pv{font-family:'DM Mono',monospace;font-size:17px;font-weight:700;color:var(--muted);}
+.pv.G{color:var(--grn);}.pv.R{color:var(--red);}.pv.A{color:var(--amb);}
+.rbadge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--line);color:var(--muted);}
+.rbadge.G{background:var(--grn-bg);color:var(--grn);border:1px solid var(--grn-bdr);}
+.rbadge.R{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bdr);}
+.rbadge.A{background:var(--amb-bg);color:var(--amb);border:1px solid var(--amb-bdr);}
+.vd{width:1px;height:26px;background:var(--line);}
+.addbtn{width:100%;background:var(--gold);border:none;border-radius:12px;color:white;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;padding:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;-webkit-tap-highlight-color:transparent;margin-top:2px;}
+.addbtn:active{opacity:.85;}
+
+/* ── BANK BALANCE — ABSA BRANDED ── */
+/* Absa official colors: #D0021B (Passion Red), #0053E1 (Blue), #FED6C9 (Blush) */
+:root {
+  --absa-red: #D0021B;
+  --absa-red2: #a80016;
+  --absa-red3: #ff1a33;
+  --absa-blue: #0053E1;
+  --absa-blush: #FED6C9;
+  --absa-blush2: #fff0ec;
+}
+.bank-card{background:white;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px #D0021B22;margin-bottom:12px;border:1px solid #f5c0c8;}
+.bank-header{background:linear-gradient(135deg,var(--absa-red),var(--absa-red2));padding:16px 18px 14px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;}
+.bank-header::after{content:'absa';position:absolute;right:16px;bottom:-8px;font-size:52px;font-weight:900;color:rgba(255,255,255,.08);letter-spacing:-2px;font-style:italic;pointer-events:none;}
+.bank-header-left{display:flex;align-items:center;gap:10px;}
+.bank-icon{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.18);border:1.5px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.bank-title{font-family:'Playfair Display',serif;font-size:15px;color:white;text-shadow:0 1px 3px #0003;}
+.bank-sub{font-size:10px;color:rgba(255,255,255,.7);margin-top:1px;letter-spacing:.5px;}
+.bank-edit-btn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:8px;color:white;font-size:12px;font-weight:700;padding:6px 12px;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:'DM Sans',sans-serif;letter-spacing:.3px;}
+.bank-edit-btn:active{background:rgba(255,255,255,.28);}
+.bank-balances{display:flex;border-bottom:1px solid #fde0e4;background:var(--absa-blush2);}
+.bank-bal-box{flex:1;padding:14px 16px;text-align:center;border-right:1px solid #fde0e4;}
+.bank-bal-box:last-child{border-right:none;}
+.bank-bal-label{font-size:10px;font-weight:700;color:var(--absa-red);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px;opacity:.8;}
+.bank-bal-val{font-family:'Playfair Display',serif;font-size:20px;color:#1a0005;line-height:1;}
+.bank-bal-val.current{color:#0a7a3a;}
+.bank-bal-val.low{color:var(--absa-red);}
+.bank-txn-head{padding:11px 16px;display:flex;align-items:center;justify-content:space-between;background:var(--absa-blush);border-bottom:1px solid #fcd0c8;}
+.bank-txn-title{font-size:11px;font-weight:700;color:var(--absa-red);text-transform:uppercase;letter-spacing:.8px;}
+.bank-txn-btns{display:flex;gap:7px;}
+.txn-btn{padding:5px 12px;border-radius:7px;border:none;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.txn-btn-dep{background:#e8f5ee;color:#1a6b3a;border:1px solid #a8dfc0;}
+.txn-btn-wd{background:#fff0ec;color:var(--absa-red);border:1px solid #fcc0b8;}
+.bank-txn-list{max-height:200px;overflow-y:auto;}
+.txn-row{padding:11px 16px;display:flex;align-items:center;gap:11px;border-bottom:1px solid #fde8e4;}
+.txn-row:last-child{border-bottom:none;}
+.txn-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.txn-info{flex:1;min-width:0;}
+.txn-narr{font-size:13px;font-weight:600;color:#1a0005;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.txn-date{font-size:10px;color:#9b6b70;margin-top:1px;}
+.txn-bal-after{font-size:10px;color:#9b6b70;margin-top:1px;}
+.txn-amt{font-family:'DM Mono',monospace;font-size:14px;font-weight:700;text-align:right;flex-shrink:0;}
+.txn-amt.dep{color:#1a6b3a;}
+.txn-amt.wd{color:var(--absa-red);}
+.bank-empty{text-align:center;padding:20px;color:#9b6b70;font-size:13px;}
+
+/* set-balance modal inner */
+.bal-setup{padding:16px 18px;}
+.bal-setup-title{font-family:'Playfair Display',serif;font-size:18px;color:var(--absa-red);margin-bottom:4px;}
+.bal-setup-sub{font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.5;}
+
+/* ══════════════════════════════════════
+   RESPONSIVE — TABLET & DESKTOP
+══════════════════════════════════════ */
+
+/* Small phones */
+@media (max-width: 360px) {
+  .ni { font-size: 8px; min-width: 52px; }
+  .ni-icon { font-size: 15px; }
+  .hval { font-size: 26px; }
+  .smv { font-size: 14px; }
+  .pp { padding: 10px 10px 28px; }
+  .cf input { font-size: 12px; padding: 7px; }
+  .lbtn { font-size: 9px; padding: 6px 2px; }
+}
+
+/* ── TABLET & DESKTOP (768px+) ── */
+@media (min-width: 768px) {
+
+  /* Login screen */
+  #loginScreen { padding: 60px 32px; }
+  #pinTitle { font-size: 32px !important; }
+  #pinSub { font-size: 15px !important; margin-bottom: 48px !important; }
+  #pinKeypad { grid-template-columns: repeat(3, 80px) !important; gap: 14px !important; }
+  .kbtn { height: 80px !important; font-size: 26px !important; border-radius: 50% !important; }
+
+  /* Root layout: vertical stack (topbar → content+sidebar) */
+  #appRoot {
+    flex-direction: column !important;
+    max-width: 100% !important;
+    height: 100dvh;
+    width: 100%;
+  }
+
+  .app {
+    flex-direction: column !important;
+    max-width: 100% !important;
+    width: 100%;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  /* ── TOP NAVBAR ── */
+  .topbar {
+    display: flex !important;
+    padding: 0 28px;
+    height: 58px;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 14px;
+  }
+  .tlogo { width: 36px; height: 36px; font-size: 17px; }
+  .tname { font-size: 18px; }
+  .tsub { font-size: 10px; }
+  /* Push save/sync icons to the right */
+  .topbar .icon-btn:first-of-type { margin-left: auto; }
+
+  /* ── HORIZONTAL NAV (below topbar) ── */
+  .bnav {
+    flex-direction: row !important;
+    width: 100% !important;
+    height: auto !important;
+    border-top: none !important;
+    border-bottom: 2px solid var(--navy3) !important;
+    padding: 0 20px !important;
+    justify-content: flex-start !important;
+    gap: 0;
+    overflow-x: auto;
+    flex-shrink: 0;
+  }
+
+  .ni {
+    min-width: unset !important;
+    width: auto !important;
+    flex: none !important;
+    flex-direction: row !important;
+    gap: 7px;
+    padding: 10px 18px !important;
+    font-size: 11px !important;
+    letter-spacing: 0.5px;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+  }
+  .ni.active {
+    border-bottom-color: var(--gold) !important;
+    background: transparent !important;
+  }
+  .ni-icon { font-size: 16px !important; margin-bottom: 0 !important; }
+
+  /* ── PAGES AREA ── */
+  .pages { flex: 1; overflow: hidden; background: var(--silver); }
+  .page { overflow-y: auto; }
+  .pp { padding: 28px 32px 48px; max-width: 1200px; margin: 0 auto; }
+
+  /* Wider stat grids */
+  .sg { grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 14px; }
+  .sm { padding: 16px; }
+  .smv { font-size: 17px; }
+  .sml { font-size: 10px; }
+
+  /* Hero cards */
+  .hero { padding: 24px 26px; border-radius: 16px; }
+  .hval { font-size: 38px; }
+  .hlbl { font-size: 11px; }
+  .hsub { font-size: 12px; }
+
+  /* Content cards */
+  .cw { border-radius: 14px; }
+  .ri { padding: 14px 18px; }
+  .rmain { font-size: 15px; }
+  .rsub { font-size: 12px; }
+  .rval { font-size: 15px; }
+
+  /* Charts */
+  .bwrap { padding: 18px 22px; }
+  .brow { gap: 14px; margin-bottom: 11px; }
+  .bmo { width: 36px; font-size: 12px; }
+  .bamt { width: 90px; font-size: 12px; }
+  .btrack { height: 24px; border-radius: 4px; }
+
+  /* Sheet → centered modal */
+  .bkdrop { align-items: center; justify-content: center; }
+  .sheet {
+    border-radius: 20px !important;
+    max-width: 540px;
+    max-height: 88dvh;
+    transform: translateY(0) scale(.96) !important;
+    box-shadow: 0 20px 60px #0008;
+  }
+  .bkdrop.open .sheet { transform: scale(1) !important; }
+
+  /* FAB */
+  .fab { bottom: 28px; right: 32px; width: 54px; height: 54px; font-size: 26px; }
+
+  /* Toast */
+  .toast { bottom: 28px; font-size: 14px; padding: 10px 22px; }
+
+  /* Bank */
+  .bank-bal-box { padding: 18px 24px; }
+  .bank-bal-val { font-size: 24px; }
+  .bank-txn-list { max-height: 280px; }
+}
+
+/* ── WIDE DESKTOP (1024px+) ── */
+@media (min-width: 1024px) {
+  .pp { padding: 32px 40px 56px; }
+  #ocards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  #ocards .oc { margin-bottom: 0; }
+  .sg { gap: 16px; }
+  .hero { padding: 26px 30px; }
+  .hval { font-size: 42px; }
+}
+
+/* ── LARGE DESKTOP (1400px+) ── */
+@media (min-width: 1400px) {
+  .pp { max-width: 1400px; padding: 36px 48px 60px; }
+  .sg { grid-template-columns: repeat(4, 1fr); gap: 18px; }
+  .smv { font-size: 20px; }
+  .hval { font-size: 46px; }
+  #ocards { grid-template-columns: 1fr 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" style="display:none;position:fixed;inset:0;background:var(--navy);z-index:200;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;">
+  <div style="font-size:52px;margin-bottom:12px">🦅</div>
+  <div style="font-family:'Playfair Display',serif;font-size:24px;color:white;margin-bottom:6px" id="pinTitle">Rocoti's Logistics</div>
+  <div style="font-size:13px;color:var(--muted);margin-bottom:36px;text-align:center;line-height:1.5" id="pinSub">Connecting...</div>
+
+  <!-- PIN dots -->
+  <div style="display:flex;gap:16px;margin-bottom:40px">
+    <div id="pd0" style="width:16px;height:16px;border-radius:50%;border:2px solid var(--gold);transition:background .15s"></div>
+    <div id="pd1" style="width:16px;height:16px;border-radius:50%;border:2px solid var(--gold);transition:background .15s"></div>
+    <div id="pd2" style="width:16px;height:16px;border-radius:50%;border:2px solid var(--gold);transition:background .15s"></div>
+    <div id="pd3" style="width:16px;height:16px;border-radius:50%;border:2px solid var(--gold);transition:background .15s"></div>
+  </div>
+
+  <!-- Keypad -->
+  <div style="display:grid;grid-template-columns:repeat(3,72px);gap:12px" id="pinKeypad">
+    <style>
+      .kbtn{height:64px;border-radius:50%;background:var(--navy2);border:1px solid var(--navy3);color:white;font-family:'DM Sans',sans-serif;font-size:22px;font-weight:600;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .12s;}
+      .kbtn:active{background:var(--gold);}
+      #pd0.filled,#pd1.filled,#pd2.filled,#pd3.filled{background:var(--gold);border-color:var(--gold);}
+    </style>
+    <button class="kbtn" onclick="pinPress('1')">1</button>
+    <button class="kbtn" onclick="pinPress('2')">2</button>
+    <button class="kbtn" onclick="pinPress('3')">3</button>
+    <button class="kbtn" onclick="pinPress('4')">4</button>
+    <button class="kbtn" onclick="pinPress('5')">5</button>
+    <button class="kbtn" onclick="pinPress('6')">6</button>
+    <button class="kbtn" onclick="pinPress('7')">7</button>
+    <button class="kbtn" onclick="pinPress('8')">8</button>
+    <button class="kbtn" onclick="pinPress('9')">9</button>
+    <div></div>
+    <button class="kbtn" onclick="pinPress('0')">0</button>
+    <button class="kbtn" onclick="pinPress('del')" style="font-size:18px">⌫</button>
+  </div>
+  <div style="margin-top:28px;font-size:11px;color:var(--muted);text-align:center">🔒 Your data is encrypted and synced to the cloud</div>
+</div>
+
+<!-- APP ROOT -->
+<div id="appRoot" style="display:none;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto;width:100%">
+<div class="app">
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="tlogo">🦅</div>
+  <div style="flex:1">
+    <div class="tname">Rocoti's Logistics</div>
+    <div class="tsub">Business Manager</div>
+  </div>
+  <div class="icon-btn" onclick="saveSnapshot()">💾</div>
+  <div class="icon-btn" id="syncIcon" title="Cloud sync — tap to sync now" onclick="scheduleSyncToCloud()">☁️</div>
+</div>
+<!-- Desktop sync badge (visible only on wide screens via CSS) -->
+<div id="desktopSync" style="display:none;position:fixed;top:14px;right:20px;z-index:90;background:var(--navy3);border:1px solid var(--navy4);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--gold2);font-weight:600;cursor:pointer" onclick="scheduleSyncToCloud()">☁️ Synced</div>
+
+<!-- PAGES -->
+<div class="pages">
+
+<!-- ═══ ESTIMATOR ═══ -->
+<div class="page active" id="page-estimate">
+<div class="pp">
+  <div class="rstrip">
+    <div class="rstit">🎯 Target Profit Per Trip</div>
+    <div class="rrow">
+      <div class="rf"><label>Min (GHc)</label><input type="number" id="minP" value="1000" inputmode="numeric" onchange="saveSettings();recalcAll()"/></div>
+      <div class="rf"><label>Max (GHc)</label><input type="number" id="maxP" value="1300" inputmode="numeric" onchange="saveSettings();recalcAll()"/></div>
+    </div>
+  </div>
+  <div id="ocards"></div>
+  <button class="addbtn" onclick="addCard()"><span style="font-size:18px">＋</span> Add Trip / Material</button>
+</div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div class="page" id="page-dashboard">
+<div class="pp">
+  <div class="hero" data-e="💰">
+    <div class="hlbl">Today's Estimated Profit</div>
+    <div class="hval" id="d-profit">GHc 0</div>
+    <div class="hsub" id="d-sub">No trips yet — go to Estimator</div>
+  </div>
+  <div class="sg">
+    <div class="sm"><div class="sml">Total Trips</div><div class="smv A" id="d-trips">0</div></div>
+    <div class="sm"><div class="sml">Revenue</div><div class="smv" id="d-rev">GHc 0</div></div>
+    <div class="sm"><div class="sml">✅ On Target</div><div class="smv G" id="d-good">0</div></div>
+    <div class="sm"><div class="sml">⚠️ Below Target</div><div class="smv R" id="d-bad">0</div></div>
+  </div>
+  <!-- 🏦 BANK BALANCE -->
+  <div class="sec-title" style="display:flex;align-items:center;gap:6px">🏦 Bank Balance <span style="font-size:9px;background:#D0021B;color:white;padding:2px 7px;border-radius:10px;font-weight:700;letter-spacing:.5px">ABSA</span></div>
+  <div class="bank-card" id="bankCard">
+
+    <!-- Header -->
+    <div class="bank-header">
+      <div class="bank-header-left">
+        <div class="bank-icon"><span style="color:#D0021B;font-weight:900;font-size:12px;font-style:italic;letter-spacing:-1px;background:white;width:100%;height:100%;display:flex;align-items:center;justify-content:center;border-radius:50%">absa</span></div>
+        <div>
+          <div class="bank-title">Rocoti's Logistics</div>
+          <div class="bank-sub">Absa Bank Ghana &nbsp;·&nbsp; Acct: 869796</div>
+        </div>
+      </div>
+      <button class="bank-edit-btn" onclick="openSheet('setbal')">⚙️ Set Balance</button>
+    </div>
+
+    <!-- Balances -->
+    <div class="bank-balances">
+      <div class="bank-bal-box">
+        <div class="bank-bal-label">Previous Balance</div>
+        <div class="bank-bal-val" id="b-prev">—</div>
+      </div>
+      <div class="bank-bal-box">
+        <div class="bank-bal-label">Available Balance</div>
+        <div class="bank-bal-val current" id="b-avail">Set balance →</div>
+      </div>
+    </div>
+
+    <!-- Transactions header -->
+    <div class="bank-txn-head">
+      <div class="bank-txn-title">Transactions</div>
+      <div class="bank-txn-btns">
+        <button class="txn-btn txn-btn-dep" onclick="openSheet('deposit')">＋ Deposit</button>
+        <button class="txn-btn txn-btn-wd" onclick="openSheet('withdraw')">－ Withdraw</button>
+      </div>
+    </div>
+
+    <!-- Transaction list -->
+    <div class="bank-txn-list" id="txnList">
+      <div class="bank-empty">No transactions yet — set your balance to start</div>
+    </div>
+
+  </div>
+
+  <!-- ⛽ FUEL CALCULATOR -->
+  <div class="sec-title">⛽ Trip Fuel Calculator — Howo 371</div>
+  <div class="fuel-calc-card">
+    <div class="fc-truck-badge">🚛 Sinotruk Howo 371 · WD615 Engine</div>
+
+    <!-- Unit toggle -->
+    <div class="fc-unit-row">
+      <button class="fc-unit-btn active" id="btn-km" onclick="setUnit('km')">Kilometres</button>
+      <button class="fc-unit-btn" id="btn-mi" onclick="setUnit('mi')">Miles</button>
+    </div>
+
+    <!-- Distance input -->
+    <div class="fc-field-row">
+      <div class="fc-field">
+        <label class="fc-label">Trip Distance</label>
+        <div class="fc-input-wrap">
+          <input type="number" id="fc-dist" class="fc-input" placeholder="e.g. 120" inputmode="decimal" oninput="calcFuel()"/>
+          <span class="fc-unit-tag" id="fc-unit-tag">km</span>
+        </div>
+      </div>
+      <div class="fc-field">
+        <label class="fc-label">Fuel Price (GHc/L)</label>
+        <div class="fc-input-wrap">
+          <input type="number" id="fc-price" class="fc-input" placeholder="e.g. 14.50" inputmode="decimal" oninput="calcFuel()"/>
+          <span class="fc-unit-tag">GHc</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Load select -->
+    <div style="margin-bottom:12px">
+      <label class="fc-label">Load Condition</label>
+      <div class="fc-load-row">
+        <button class="fc-load-btn" id="load-full" onclick="setLoad('full')">🟢 Full Load<br><small>34 L/100km</small></button>
+        <button class="fc-load-btn" id="load-half" onclick="setLoad('half')">🟡 Half Load<br><small>23.8 L/100km</small></button>
+        <button class="fc-load-btn" id="load-empty" onclick="setLoad('empty')">⚪ Empty<br><small>13.9 L/100km</small></button>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="fc-results" id="fc-results" style="display:none">
+      <div class="fc-res-row">
+        <div class="fc-res-box">
+          <div class="fc-res-label">Fuel Needed</div>
+          <div class="fc-res-val blue" id="fc-litres">—</div>
+          <div class="fc-res-sub">litres</div>
+        </div>
+        <div class="fc-res-box" id="fc-cost-box" style="display:none">
+          <div class="fc-res-label">Fuel Cost</div>
+          <div class="fc-res-val gold" id="fc-cost">—</div>
+          <div class="fc-res-sub">GHc</div>
+        </div>
+        <div class="fc-res-box">
+          <div class="fc-res-label">Return Trip</div>
+          <div class="fc-res-val" id="fc-return">—</div>
+          <div class="fc-res-sub">litres total</div>
+        </div>
+      </div>
+      <div class="fc-tip" id="fc-tip"></div>
+    </div>
+  </div>
+
+  <div class="sec-title">📋 Saved Snapshots</div>
+  <div id="snapList"><div class="es"><div class="ei">📊</div>Tap 💾 above to save a daily snapshot</div></div>
+</div>
+</div>
+
+<!-- ═══ FUEL ═══ -->
+<div class="page" id="page-fuel">
+<div class="pp">
+  <div class="hero" data-e="⛽">
+    <div class="hlbl">Total Fuel Spend</div>
+    <div class="hval" id="ft-total">GHc 0</div>
+    <div class="hsub" id="ft-sub">No records yet</div>
+  </div>
+  <div class="sg">
+    <div class="sm"><div class="sml">This Month</div><div class="smv A" id="ft-month">GHc 0</div></div>
+    <div class="sm"><div class="sml">Avg Per Fill</div><div class="smv B" id="ft-avg">GHc 0</div></div>
+    <div class="sm"><div class="sml">Total Fills</div><div class="smv" id="ft-count">0</div></div>
+    <div class="sm"><div class="sml">Lowest Month</div><div class="smv G" id="ft-best">—</div></div>
+  </div>
+  <div class="sec-title">📅 Monthly Fuel Spend</div>
+  <div class="cn"><div class="bwrap" id="fuelChart"><div class="es" style="color:var(--muted)">No data yet</div></div></div>
+  <div class="sec-title">🗓 Fuel Records</div>
+  <div id="fuelList"><div class="es"><div class="ei">⛽</div>No fuel records yet. Tap + to add.</div></div>
+</div>
+<button class="fab" onclick="openSheet('fuel')">＋</button>
+</div>
+
+<!-- ═══ MAINTENANCE ═══ -->
+<div class="page" id="page-maint">
+<div class="pp">
+  <div class="hero" data-e="🔧">
+    <div class="hlbl">Total Maintenance Spend</div>
+    <div class="hval" id="mt-total">GHc 0</div>
+    <div class="hsub" id="mt-sub">No records yet</div>
+  </div>
+  <div class="sg">
+    <div class="sm"><div class="sml">This Month</div><div class="smv A" id="mt-month">GHc 0</div></div>
+    <div class="sm"><div class="sml">Due Soon (30d)</div><div class="smv R" id="mt-due">0</div></div>
+    <div class="sm"><div class="sml">Total Records</div><div class="smv G" id="mt-done">0</div></div>
+    <div class="sm"><div class="sml">Overdue</div><div class="smv R" id="mt-over">0</div></div>
+  </div>
+  <div class="sec-title">⚠️ Upcoming & Overdue</div>
+  <div id="maintDue"><div class="es"><div class="ei">✅</div>All clear! No upcoming maintenance.</div></div>
+  <div class="sec-title">📋 All Records</div>
+  <div id="maintAll"><div class="es"><div class="ei">🔧</div>No records yet. Tap + to add.</div></div>
+</div>
+<button class="fab" onclick="openSheet('maint')">＋</button>
+</div>
+
+<!-- ═══ EXPENSES ═══ -->
+<div class="page" id="page-expenses">
+<div class="pp">
+  <div class="hero" data-e="📦">
+    <div class="hlbl">Total Expenses</div>
+    <div class="hval" id="ex-total">GHc 0</div>
+    <div class="hsub" id="ex-sub">All categories</div>
+  </div>
+  <div class="sg">
+    <div class="sm"><div class="sml">This Month</div><div class="smv A" id="ex-month">GHc 0</div></div>
+    <div class="sm"><div class="sml">This Year</div><div class="smv" id="ex-year">GHc 0</div></div>
+    <div class="sm"><div class="sml">Total Items</div><div class="smv B" id="ex-count">0</div></div>
+    <div class="sm"><div class="sml">Top Category</div><div class="smv A" id="ex-top" style="font-size:12px">—</div></div>
+  </div>
+  <div class="sec-title">🏆 Spending by Category</div>
+  <div id="expCats"><div class="es"><div class="ei">📦</div>No expenses yet</div></div>
+  <div class="sec-title">📅 Monthly Spend</div>
+  <div class="cn"><div class="bwrap" id="expChart"><div class="es" style="color:var(--muted)">No data yet</div></div></div>
+  <div class="sec-title">📋 All Expenses</div>
+  <div id="expList"><div class="es"><div class="ei">💸</div>No expenses recorded. Tap + to add.</div></div>
+</div>
+<button class="fab" onclick="openSheet('expense')">＋</button>
+</div>
+
+</div><!-- /pages -->
+
+<!-- NAV -->
+<div class="bnav">
+  <div class="ni active" id="nav-estimate" onclick="goto('estimate')"><div class="ni-icon">🧮</div>Estimate</div>
+  <div class="ni" id="nav-dashboard" onclick="goto('dashboard')"><div class="ni-icon">📊</div>Overview</div>
+  <div class="ni" id="nav-fuel" onclick="goto('fuel')"><div class="ni-icon">⛽</div>Fuel</div>
+  <div class="ni" id="nav-maint" onclick="goto('maint')"><div class="ni-icon">🔧</div>Service</div>
+  <div class="ni" id="nav-expenses" onclick="goto('expenses')"><div class="ni-icon">📦</div>Expenses</div>
+</div>
+</div><!-- /app -->
+</div><!-- /appRoot -->
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══ SHEETS ═══ -->
+<!-- FUEL -->
+<div class="bkdrop" id="sheet-fuel">
+<div class="sheet">
+  <div class="shandle"></div>
+  <div class="shead"><div class="stitle">⛽ Add Fuel Record</div></div>
+  <div class="sbody">
+    <div class="fr">
+      <div class="fg"><label class="ilbl">Date</label><input class="inp" type="date" id="f-date"/></div>
+      <div class="fg"><label class="ilbl">Cost (GHc)</label><input class="inp" type="number" id="f-cost" placeholder="e.g. 850" inputmode="numeric"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="ilbl">Litres</label><input class="inp" type="number" id="f-litres" placeholder="e.g. 60" inputmode="numeric"/></div>
+      <div class="fg"><label class="ilbl">Odometer (km)</label><input class="inp" type="number" id="f-odo" placeholder="optional" inputmode="numeric"/></div>
+    </div>
+    <div class="fg"><label class="ilbl">Vehicle / Notes</label><input class="inp" type="text" id="f-note" placeholder="e.g. Tipper truck 1"/></div>
+  </div>
+  <div class="sacts">
+    <button class="sbtn sbnc" onclick="closeSheet('fuel')">Cancel</button>
+    <button class="sbtn sbns" onclick="saveFuel()">Save Record</button>
+  </div>
+</div>
+</div>
+
+<!-- MAINTENANCE -->
+<div class="bkdrop" id="sheet-maint">
+<div class="sheet">
+  <div class="shandle"></div>
+  <div class="shead"><div class="stitle">🔧 Add Maintenance</div></div>
+  <div class="sbody">
+    <div class="fg"><label class="ilbl">Item / Description</label><input class="inp" type="text" id="m-item" placeholder="e.g. Engine oil change, Tyre replacement"/></div>
+    <div class="fr">
+      <div class="fg"><label class="ilbl">Date Done</label><input class="inp" type="date" id="m-date"/></div>
+      <div class="fg"><label class="ilbl">Cost (GHc)</label><input class="inp" type="number" id="m-cost" placeholder="e.g. 1200" inputmode="numeric"/></div>
+    </div>
+    <div class="fr">
+      <div class="fg"><label class="ilbl">Next Due Date</label><input class="inp" type="date" id="m-next"/></div>
+      <div class="fg"><label class="ilbl">Vehicle</label><input class="inp" type="text" id="m-veh" placeholder="e.g. Tipper 1"/></div>
+    </div>
+    <div class="fg"><label class="ilbl">Category</label>
+      <select class="inp" id="m-cat">
+        <option>Engine</option><option>Tyres</option><option>Brakes</option>
+        <option>Electrical</option><option>Body / Frame</option><option>Hydraulics</option><option>Other</option>
+      </select>
+    </div>
+  </div>
+  <div class="sacts">
+    <button class="sbtn sbnc" onclick="closeSheet('maint')">Cancel</button>
+    <button class="sbtn sbns" onclick="saveMaint()">Save</button>
+  </div>
+</div>
+</div>
+
+<!-- EXPENSE -->
+<div class="bkdrop" id="sheet-expense">
+<div class="sheet">
+  <div class="shandle"></div>
+  <div class="shead"><div class="stitle">📦 Add Expense</div></div>
+  <div class="sbody">
+    <div class="fg"><label class="ilbl">Item / Description</label><input class="inp" type="text" id="e-item" placeholder="e.g. Safety gear, Office supplies"/></div>
+    <div class="fr">
+      <div class="fg"><label class="ilbl">Date</label><input class="inp" type="date" id="e-date"/></div>
+      <div class="fg"><label class="ilbl">Amount (GHc)</label><input class="inp" type="number" id="e-amt" placeholder="e.g. 450" inputmode="numeric"/></div>
+    </div>
+    <div class="fg"><label class="ilbl">Category</label>
+      <select class="inp" id="e-cat">
+        <option>Tools & Equipment</option><option>Safety & Protective</option><option>Office & Admin</option>
+        <option>Labour</option><option>Insurance</option><option>Road Fees / Tolls</option>
+        <option>Communication</option><option>Other</option>
+      </select>
+    </div>
+    <div class="fg"><label class="ilbl">Notes (optional)</label><input class="inp" type="text" id="e-note" placeholder="Any extra details"/></div>
+  </div>
+  <div class="sacts">
+    <button class="sbtn sbnc" onclick="closeSheet('expense')">Cancel</button>
+    <button class="sbtn sbns" onclick="saveExpense()">Save</button>
+  </div>
+</div>
+</div>
+
+<!-- SET BALANCE SHEET -->
+<div class="bkdrop" id="sheet-setbal">
+<div class="sheet">
+  <div class="shandle"></div>
+  <div class="shead"><div class="stitle">🏦 Set Opening Balance</div></div>
+  <div class="sbody">
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.6">Enter the total amount currently in your bank account. This becomes your Available Balance.</p>
+    <div class="fg"><label class="ilbl">Opening Balance (GHc)</label><input class="inp" type="number" id="sb-amt" placeholder="e.g. 20000" inputmode="decimal" style="font-size:20px;font-weight:700;text-align:center"/></div>
+    <div class="fg"><label class="ilbl">Note (optional)</label><input class="inp" type="text" id="sb-note" placeholder="e.g. Opening balance March 2026"/></div>
+  </div>
+  <div class="sacts">
+    <button class="sbtn sbnc" onclick="closeSheet('setbal')">Cancel</button>
+    <button class="sbtn sbns" onclick="doSetBalance()">Confirm</button>
+  </div>
+</div>
+</div>
+
+<!-- DEPOSIT SHEET -->
+<div class="bkdrop" id="sheet-deposit">
+<div class="sheet">
+  <div class="shandle"></div>
+  <div class="shead"><div class="stitle">💚 Deposit / Credit</div></div>
+  <div class="sbody">
+    <div class="fr">
+      <div class="fg"><label class="ilbl">Amount (GHc)</label><input class="inp" type="number" id="dep-amt" placeholder="e.g. 5000" inputmode="decimal" style="font-weight:700"/></div>
+      <div class="fg"><label class="ilbl">Date</label><input class="inp" type="date" id="dep-date"/></div>
+    </div>
+    <div class="fg"><label class="ilbl">Narration / Description</label><input class="inp" type="text" id="dep-narr" placeholder="e.g. Payment from BSD Mining"/></div>
+  </div>
+  <div class="sacts">
+    <button class="sbtn sbnc" onclick="closeSheet('deposit')">Cancel</button>
+    <button class="sbtn" style="background:var(--grn);color:white" onclick="doDeposit()">Add Deposit</button>
+  </div>
+</div>
+</div>
+
+<!-- WITHDRAW SHEET -->
+<div class="bkdrop" id="sheet-withdraw">
+<div class="sheet">
+  <div class="shandle"></div>
+  <div class="shead"><div class="stitle">🔴 Withdrawal / Debit</div></div>
+  <div class="sbody">
+    <div class="fr">
+      <div class="fg"><label class="ilbl">Amount (GHc)</label><input class="inp" type="number" id="wd-amt" placeholder="e.g. 1000" inputmode="decimal" style="font-weight:700"/></div>
+      <div class="fg"><label class="ilbl">Date</label><input class="inp" type="date" id="wd-date"/></div>
+    </div>
+    <div class="fg"><label class="ilbl">Narration / Description</label><input class="inp" type="text" id="wd-narr" placeholder="e.g. Fuel purchase, Driver wages"/></div>
+  </div>
+  <div class="sacts">
+    <button class="sbtn sbnc" onclick="closeSheet('withdraw')">Cancel</button>
+    <button class="sbtn" style="background:var(--red);color:white" onclick="doWithdraw()">Confirm Withdrawal</button>
+  </div>
+</div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// SUPABASE CLOUD CONFIG
+// ══════════════════════════════════════
+const SB_URL = 'https://khrjgpkqxaxidlhymrfk.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtocmpncGtxeGF4aWRsaHltcmZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxMzU1NTAsImV4cCI6MjA4ODcxMTU1MH0.sCs7y6GUO--2Mzrv0nOq57SgenceNEEGs4IzdWVne_g';
+const ROW_ID = 'rocotis_main';
+
+// ─── STORAGE ───────────────────────────
+const K={s:'rtl_set',c:'rtl_cards',sn:'rtl_snaps',f:'rtl_fuel',m:'rtl_maint',e:'rtl_exp',b:'rtl_bank'};
+const ld=k=>{try{return JSON.parse(localStorage.getItem(k))||[];}catch{return[];}};
+const ldO=k=>{try{return JSON.parse(localStorage.getItem(k))||{};}catch{return{};}};
+const sv=(k,v)=>{localStorage.setItem(k,JSON.stringify(v));scheduleSyncToCloud();};
+const ICONS={'Engine':'🔩','Tyres':'🛞','Brakes':'🛑','Electrical':'⚡','Body / Frame':'🚛','Hydraulics':'🔧','Other':'🔩','Tools & Equipment':'🔨','Safety & Protective':'🦺','Office & Admin':'📁','Labour':'👷','Insurance':'📋','Road Fees / Tolls':'🛣️','Communication':'📱'};
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// ── CLOUD SYNC ────────────────────────
+let syncTimer=null, isSyncing=false, isOnline=navigator.onLine, currentPIN=null;
+
+function scheduleSyncToCloud(){
+  if(syncTimer) clearTimeout(syncTimer);
+  syncTimer = setTimeout(syncToCloud, 1500);
+}
+
+async function sbFetch(path, opts={}){
+  const method = (opts.method||'GET').toUpperCase();
+  const defaultPrefer = method==='GET' ? 'return=representation' : 'return=minimal';
+  const res = await fetch(SB_URL+path, {
+    ...opts,
+    headers:{
+      'apikey':SB_KEY,
+      'Authorization':'Bearer '+SB_KEY,
+      'Content-Type':'application/json',
+      'Prefer': defaultPrefer,
+      ...(opts.headers||{})
+    }
+  });
+  if(!res.ok){ const t=await res.text(); throw new Error(t); }
+  const ct=res.headers.get('content-type')||'';
+  return ct.includes('json') ? res.json() : null;
+}
+
+async function syncToCloud(){
+  if(!currentPIN||isSyncing||!navigator.onLine) return;
+  isSyncing=true; setSyncIcon('⏳');
+  try {
+    const data={};
+    Object.values(K).forEach(k=>{const raw=localStorage.getItem(k);if(raw)data[k]=JSON.parse(raw);});
+    await sbFetch('/rest/v1/rtl_data', {
+      method:'POST',
+      headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+      body: JSON.stringify({id:ROW_ID, user_pin:currentPIN, data, updated_at:new Date().toISOString()})
+    });
+    setSyncIcon('☁️'); localStorage.setItem('rtl_last_sync', new Date().toLocaleTimeString('en-GH'));
+  } catch(e){ setSyncIcon('⚠️'); console.warn('Sync failed:',e.message); }
+  isSyncing=false;
+}
+
+async function loadFromCloud(pin){
+  try {
+    const rows = await sbFetch('/rest/v1/rtl_data?id=eq.'+ROW_ID+'&select=*');
+    if(!rows||!rows.length) return false;
+    const row=rows[0];
+    if(row.user_pin !== pin) return 'wrong_pin';
+    if(row.data) Object.entries(row.data).forEach(([k,v])=>localStorage.setItem(k,JSON.stringify(v)));
+    return true;
+  } catch(e){ console.warn('Cloud load failed:',e.message); return false; }
+}
+
+async function checkPINExists(){
+  try {
+    const rows = await sbFetch('/rest/v1/rtl_data?id=eq.'+ROW_ID+'&select=id');
+    return rows && rows.length > 0;
+  } catch(e){ console.warn('checkPINExists failed:',e.message); return false; }
+}
+
+function setSyncIcon(icon){
+  const el=document.getElementById('syncIcon'); if(el)el.textContent=icon;
+  const de=document.getElementById('desktopSync');
+  if(de){ const labels={'☁️':'☁️ Synced','⏳':'⏳ Syncing...','⚠️':'⚠️ Sync failed','📵':'📵 Offline','📶':'📶 Back online'}; de.textContent=labels[icon]||icon; }
+}
+window.addEventListener('online',  ()=>{ isOnline=true;  setSyncIcon('📶'); scheduleSyncToCloud(); });
+window.addEventListener('offline', ()=>{ isOnline=false; setSyncIcon('📵'); });
+
+// ══════════════════════════════════════
+// PIN LOGIN SCREEN
+// ══════════════════════════════════════
+let pinMode='enter';
+let pinBuffer='', pinFirstEntry='';
+
+function showLoginScreen(mode='enter'){
+  pinMode=mode; pinBuffer='';
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('appRoot').style.display='none';
+  const title=document.getElementById('pinTitle');
+  const sub=document.getElementById('pinSub');
+  if(mode==='create'){title.textContent='Create Your PIN';sub.textContent='Choose a 4-digit PIN to protect your data';pinFirstEntry='';}
+  else if(mode==='confirm'){title.textContent='Confirm Your PIN';sub.textContent='Enter the same PIN again to confirm';}
+  else{title.textContent='Welcome Back 👋';sub.textContent='Enter your 4-digit PIN to continue';}
+  updatePinDots();
+}
+
+function pinPress(val){
+  if(val==='del'){pinBuffer=pinBuffer.slice(0,-1);}
+  else if(pinBuffer.length<4){pinBuffer+=val;}
+  updatePinDots();
+  if(pinBuffer.length===4) setTimeout(submitPIN,120);
+}
+
+function updatePinDots(){
+  for(let i=0;i<4;i++){
+    const d=document.getElementById('pd'+i);
+    if(d) d.classList.toggle('filled', i<pinBuffer.length);
+  }
+}
+
+function launchApp(){
+  localStorage.setItem('rtl_pin', currentPIN);
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('appRoot').style.display='flex';
+  setSyncIcon('☁️');
+  // Show desktop sync badge on wide screens
+  if(window.innerWidth >= 768){
+    const ds=document.getElementById('desktopSync');
+    if(ds) ds.style.display='block';
+  }
+  loadSettings(); loadCards(); renderBank();
+  document.getElementById('dep-date').value=today();
+  document.getElementById('wd-date').value=today();
+}
+
+async function bootApp(){
+  document.getElementById('loginScreen').style.display='flex';
+  document.getElementById('appRoot').style.display='none';
+
+  // Skip the network check entirely — just show the PIN screen
+  // If account exists, entering PIN will load from cloud
+  // If account doesn't exist, entering PIN twice will create it
+  const hadPinBefore = localStorage.getItem('rtl_pin');
+  if(hadPinBefore){
+    showLoginScreen('enter');
+  } else {
+    showLoginScreen('create');
+  }
+}
+
+async function submitPIN(){
+  const pin=pinBuffer;
+  pinBuffer='';
+  updatePinDots();
+
+  if(pinMode==='create'){
+    pinFirstEntry=pin;
+    pinMode='confirm';
+    document.getElementById('pinTitle').textContent='Confirm Your PIN';
+    document.getElementById('pinSub').textContent='Enter the same PIN again to confirm';
+    return;
+  }
+
+  if(pinMode==='confirm'){
+    if(pin !== pinFirstEntry){
+      pinFirstEntry='';
+      pinMode='create';
+      document.getElementById('pinTitle').textContent='Create Your PIN';
+      document.getElementById('pinSub').textContent='❌ PINs did not match — start again';
+      return;
+    }
+    // PINs match — save locally first so app always works
+    currentPIN=pin;
+    localStorage.setItem('rtl_pin', pin);
+    document.getElementById('pinSub').textContent='Setting up your account...';
+    // Try to save to cloud — if it fails, still launch (works offline)
+    try {
+      await sbFetch('/rest/v1/rtl_data',{
+        method:'POST',
+        headers:{'Prefer':'resolution=merge-duplicates,return=minimal'},
+        body:JSON.stringify({id:ROW_ID,user_pin:pin,data:{},updated_at:new Date().toISOString()})
+      });
+    } catch(e){
+      console.warn('Cloud setup failed, running locally:', e.message);
+    }
+    launchApp();
+    return;
+  }
+
+  // ENTER mode — try cloud first, fall back to local PIN
+  document.getElementById('pinSub').textContent='Signing in...';
+  try {
+    const result = await loadFromCloud(pin);
+    if(result===true){ currentPIN=pin; localStorage.setItem('rtl_pin',pin); launchApp(); return; }
+    if(result==='wrong_pin'){ document.getElementById('pinSub').textContent='❌ Wrong PIN. Try again.'; return; }
+  } catch(e){ console.warn('Cloud sign-in failed, trying local'); }
+
+  // Cloud failed — try local PIN as fallback
+  const localPin=localStorage.getItem('rtl_pin');
+  if(localPin && localPin===pin){
+    currentPIN=pin; launchApp();
+  } else if(localPin && localPin!==pin){
+    document.getElementById('pinSub').textContent='❌ Wrong PIN. Try again.';
+  } else {
+    // No local PIN either — they need to create one
+    document.getElementById('pinSub').textContent='No account found. Tap below to create one.';
+    setTimeout(()=>showLoginScreen('create'), 1500);
+  }
+}
+
+
+// ─── HELPERS ───────────────────────────
+const fN=n=>isNaN(n)?'0':Math.abs(n).toLocaleString('en-GH',{minimumFractionDigits:0,maximumFractionDigits:0});
+const fG=n=>'GHc '+fN(n);
+// Bank balance formatter — always shows pesewas (2 decimal places)
+const fB=n=>isNaN(n)?'—':'GHc '+parseFloat(n).toLocaleString('en-GH',{minimumFractionDigits:2,maximumFractionDigits:2});
+const today=()=>new Date().toISOString().slice(0,10);
+const mk=d=>{try{const x=new Date(d);return x.getFullYear()+'-'+(x.getMonth()+1).toString().padStart(2,'0');}catch{return'';}};
+const mlbl=k=>{try{const[y,m]=k.split('-');return MONTHS[parseInt(m)-1]+' '+y;}catch{return k;}};
+const due=d=>{const x=new Date(d),n=new Date();return Math.ceil((x-n)/(864e5));};
+const toast=msg=>{const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);};
+
+// ─── NAVIGATION ────────────────────────
+function goto(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  if(name==='dashboard')refreshDash();
+  if(name==='fuel')refreshFuel();
+  if(name==='maint')refreshMaint();
+  if(name==='expenses')refreshExp();
+}
+
+// ─── SHEETS ────────────────────────────
+function openSheet(name){
+  const d=document.getElementById(name==='fuel'?'f-date':name==='maint'?'m-date':'e-date');
+  if(d)d.value=today();
+  document.getElementById('sheet-'+name).classList.add('open');
+}
+function closeSheet(name){document.getElementById('sheet-'+name).classList.remove('open');}
+document.querySelectorAll('.bkdrop').forEach(b=>b.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');}));
+
+// ─── ESTIMATOR ─────────────────────────
+let cc=0;
+const COLS=['#b8822a','#1a6b3a','#1c3058','#7b2d8b','#c0392b','#0e6b8b','#d97706'];
+// Howo 371 consumption rates L/100km
+const HOWO_RATES={full:34,half:23.8,empty:13.9};
+
+function addCard(d={}){
+  const id=cc++,col=COLS[id%COLS.length];
+  const el=document.createElement('div');
+  el.className='oc';el.id='oc-'+id;
+  el.innerHTML=`
+  <div class="ch">
+    <div class="cn2" style="background:${col}">${id+1}</div>
+    <input class="cmi" placeholder="Material / destination" value="${d.mat||''}" oninput="asc()"/>
+    <button class="cdel" onclick="remCard(${id})">✕</button>
+  </div>
+  <div class="cb">
+
+    <!-- ⛽ FUEL ESTIMATOR STRIP -->
+    <div class="fuel-strip">
+      <div class="fuel-strip-title">⛽ Howo 371 — Auto Fuel Estimate</div>
+      <div class="cfr" style="margin-bottom:8px">
+        <div class="cf">
+          <label>Distance (km)</label>
+          <input type="number" inputmode="decimal" placeholder="e.g. 80" id="km${id}" value="${d.km||''}" oninput="rcFuel(${id})" style="border-color:#3b82f6"/>
+        </div>
+        <div class="cf">
+          <label>Fuel Price (GHc/L)</label>
+          <input type="number" inputmode="decimal" placeholder="e.g. 14.50" id="fp${id}" value="${d.fp||''}" oninput="rcFuel(${id})"/>
+        </div>
+      </div>
+      <div class="load-sel" id="ls${id}">
+        <button class="lbtn active" id="lb-full-${id}" onclick="setCardLoad(${id},'full')">🟢 Full<br><small>34L/100</small></button>
+        <button class="lbtn" id="lb-half-${id}" onclick="setCardLoad(${id},'half')">🟡 Half<br><small>23.8L/100</small></button>
+        <button class="lbtn" id="lb-empty-${id}" onclick="setCardLoad(${id},'empty')">⚪ Empty<br><small>13.9L/100</small></button>
+      </div>
+      <div class="fuel-result" id="fr${id}" style="display:none">
+        <div class="fr-box"><span class="fr-num" id="frl${id}">—</span><span class="fr-lbl">litres needed</span></div>
+        <div class="fr-div"></div>
+        <div class="fr-box"><span class="fr-num gold" id="frc${id}" style="display:none">—</span><span class="fr-lbl" id="frcl${id}" style="display:none">fuel cost GHc</span></div>
+        <div class="fr-div" id="frd${id}" style="display:none"></div>
+        <div class="fr-box"><span class="fr-num blue" id="frr${id}">—</span><span class="fr-lbl">return trip (L)</span></div>
+      </div>
+    </div>
+
+    <!-- COST FIELDS -->
+    <div class="cfr">
+      <div class="cf"><label>Material Cost</label><input type="number" inputmode="numeric" placeholder="1200" id="mc${id}" value="${d.mc||''}" oninput="rc(${id})"/></div>
+      <div class="cf"><label>Fuel Cost (GHc)</label><input type="number" inputmode="numeric" placeholder="auto or manual" id="fu${id}" value="${d.fu||''}" oninput="rc(${id})" style="border-color:#22c55e"/></div>
+    </div>
+    <div class="cfr">
+      <div class="cf"><label>Other Costs</label><input type="number" inputmode="numeric" placeholder="0" id="ot${id}" value="${d.ot||''}" oninput="rc(${id})"/></div>
+      <div class="cf"><label>Charge Client</label><input type="number" inputmode="numeric" placeholder="What to charge" id="ch${id}" value="${d.ch||''}" oninput="rc(${id})" style="border-color:var(--gold);font-weight:600"/></div>
+    </div>
+    <div class="resb" id="rb${id}">
+      <div class="rcol"><div class="rlbl">Total Cost</div><div class="rv" id="tc${id}">—</div></div>
+      <div class="vd"></div>
+      <div class="rcol" style="flex:1;align-items:center"><div class="pv" id="pv${id}">—</div><div class="rbadge" id="pb${id}">Fill in costs</div></div>
+      <div class="vd"></div>
+      <div class="rcol"><div class="rlbl">Margin</div><div class="rv" id="mg${id}">—</div></div>
+    </div>
+  </div>`;
+  document.getElementById('ocards').appendChild(el);
+  // store load state per card
+  el._load = d.load || 'full';
+  if(d.load) { document.querySelectorAll(`#lb-full-${id},#lb-half-${id},#lb-empty-${id}`).forEach(b=>b.classList.remove('active')); const lb=document.getElementById(`lb-${d.load}-${id}`); if(lb)lb.classList.add('active'); }
+  if(d.km||d.fp) rcFuel(id);
+  if(d.mc||d.fu||d.ch) rc(id);
+  asc();
+}
+
+function setCardLoad(id, load){
+  const el=document.getElementById('oc-'+id);
+  if(el) el._load=load;
+  ['full','half','empty'].forEach(l=>{const b=document.getElementById(`lb-${l}-${id}`);if(b)b.classList.toggle('active',l===load);});
+  rcFuel(id);
+}
+
+function rcFuel(id){
+  const km=parseFloat(document.getElementById('km'+id)?.value);
+  const fp=parseFloat(document.getElementById('fp'+id)?.value);
+  const el=document.getElementById('oc-'+id);
+  const load=(el&&el._load)||'full';
+  const frEl=document.getElementById('fr'+id);
+
+  if(isNaN(km)||km<=0){frEl.style.display='none';return;}
+
+  const rate=HOWO_RATES[load];
+  const litres=(km/100)*rate;
+  const returnL=litres*2;
+
+  document.getElementById('frl'+id).textContent=litres.toFixed(1)+'L';
+  document.getElementById('frr'+id).textContent=returnL.toFixed(1)+'L';
+
+  const costEl=document.getElementById('frc'+id),costLbl=document.getElementById('frcl'+id),divEl=document.getElementById('frd'+id);
+  if(!isNaN(fp)&&fp>0){
+    const cost=litres*fp;
+    costEl.textContent=cost.toFixed(2);
+    costEl.style.display='';costLbl.style.display='';divEl.style.display='';
+    // auto-fill the fuel cost field if it's empty or was previously auto-filled
+    const fuEl=document.getElementById('fu'+id);
+    if(fuEl&&(!fuEl.value||fuEl.dataset.auto==='1')){fuEl.value=cost.toFixed(2);fuEl.dataset.auto='1';rc(id);}
+  } else {
+    costEl.style.display='none';costLbl.style.display='none';divEl.style.display='none';
+  }
+  frEl.style.display='';
+  asc();
+}
+
+function rc(id){
+  // if fuel cost was manually typed, clear auto flag
+  const fuEl=document.getElementById('fu'+id);
+  if(fuEl&&fuEl.dataset.auto==='1'&&document.activeElement===fuEl) fuEl.dataset.auto='0';
+
+  const mc=parseFloat(document.getElementById('mc'+id)?.value)||0,fu=parseFloat(document.getElementById('fu'+id)?.value)||0,ot=parseFloat(document.getElementById('ot'+id)?.value)||0,ch=parseFloat(document.getElementById('ch'+id)?.value);
+  const tot=mc+fu+ot,minP=parseFloat(document.getElementById('minP').value)||1000,maxP=parseFloat(document.getElementById('maxP').value)||1300;
+  document.getElementById('tc'+id).textContent=tot>0?fG(tot):'—';
+  const pv=document.getElementById('pv'+id),pb=document.getElementById('pb'+id),rb=document.getElementById('rb'+id),mg=document.getElementById('mg'+id);
+  if(!isNaN(ch)&&ch>0&&tot>0){
+    const p=ch-tot,m=((p/ch)*100).toFixed(1);
+    pv.textContent=(p<0?'-':'')+fG(p);mg.textContent=m+'%';
+    if(p>=minP&&p<=maxP){pv.className='pv G';pb.textContent='✓ On Target';pb.className='rbadge G';rb.className='resb rg';}
+    else if(p>maxP){pv.className='pv A';pb.textContent='↑ Above Target';pb.className='rbadge A';rb.className='resb ra';}
+    else{pv.className='pv R';pb.textContent='⚠ +'+fG(minP-p)+' needed';pb.className='rbadge R';rb.className='resb rr';}
+  }else{pv.textContent='—';pv.className='pv';pb.textContent=tot>0?'Enter charge':'Fill in costs';pb.className='rbadge';rb.className='resb';mg.textContent='—';}
+  asc();
+}
+
+function recalcAll(){document.querySelectorAll('.oc').forEach(c=>{const id=parseInt(c.id.replace('oc-',''));rc(id);});}
+function remCard(id){const e=document.getElementById('oc-'+id);if(e){e.style.opacity='0';e.style.transition='opacity .15s';setTimeout(()=>e.remove(),150);}asc();}
+
+function asc(){
+  const cards=[];document.querySelectorAll('.oc').forEach(c=>{const id=parseInt(c.id.replace('oc-',''));cards.push({mat:c.querySelector('.cmi')?.value||'',km:document.getElementById('km'+id)?.value||'',fp:document.getElementById('fp'+id)?.value||'',load:c._load||'full',mc:document.getElementById('mc'+id)?.value||'',fu:document.getElementById('fu'+id)?.value||'',ot:document.getElementById('ot'+id)?.value||'',ch:document.getElementById('ch'+id)?.value||''});});
+  sv(K.c,cards);
+}
+
+function loadCards(){const saved=ld(K.c);if(saved.length>0)saved.forEach(d=>addCard(d));else{addCard();addCard();}}
+
+function saveSettings(){sv(K.s,{min:parseFloat(document.getElementById('minP').value)||1000,max:parseFloat(document.getElementById('maxP').value)||1300});}
+function loadSettings(){const s=ldO(K.s);if(s.min)document.getElementById('minP').value=s.min;if(s.max)document.getElementById('maxP').value=s.max;}
+
+function saveSnapshot(){
+  let tot=0,rev=0,trips=0,good=0,bad=0;const minP=parseFloat(document.getElementById('minP').value)||1000,maxP=parseFloat(document.getElementById('maxP').value)||1300;
+  const items=[];document.querySelectorAll('.oc').forEach(c=>{const id=parseInt(c.id.replace('oc-',''));const mc=parseFloat(document.getElementById('mc'+id)?.value)||0,fu=parseFloat(document.getElementById('fu'+id)?.value)||0,ot=parseFloat(document.getElementById('ot'+id)?.value)||0,ch=parseFloat(document.getElementById('ch'+id)?.value)||0,mat=c.querySelector('.cmi')?.value||'Material';const cost=mc+fu+ot,p=ch-cost;if(cost>0||ch>0){trips++;tot+=cost;rev+=ch;items.push({mat,cost,ch,p});if(p>=minP&&p<=maxP)good++;else if(p<minP&&ch>0)bad++;}});
+  if(!items.length){toast('⚠️ Nothing to save');return;}
+  const snaps=ld(K.sn);snaps.unshift({date:new Date().toLocaleString('en-GH'),items,totalP:rev-tot,trips,good,bad,id:Date.now()});sv(K.sn,snaps.slice(0,50));toast('✅ Snapshot saved!');
+}
+
+// ─── BANK BALANCE ──────────────────────
+function getBankState(){return ldO(K.b);}  // {balance, txns:[]}
+
+function renderBank(){
+  const state=getBankState();
+  const txns=state.txns||[];
+  const bal=state.balance;
+  const prevEl=document.getElementById('b-prev');
+  const availEl=document.getElementById('b-avail');
+
+  if(bal===undefined||bal===null){
+    prevEl.textContent='—';
+    availEl.textContent='Set balance →';
+    availEl.className='bank-bal-val current';
+    document.getElementById('txnList').innerHTML='<div class="bank-empty">No transactions yet — tap ⚙️ Set to begin</div>';
+    return;
+  }
+
+  // Previous balance = balance before most recent txn
+  const prev = txns.length>=2 ? txns[txns.length-2]?.balAfter : (txns.length===1 ? txns[0].balBefore : bal);
+  prevEl.textContent = fB(prev!==undefined ? prev : bal);
+  availEl.textContent = fB(bal);
+  availEl.className = 'bank-bal-val '+(bal>0?'current':'low');
+
+  // txn list (newest first)
+  const listEl=document.getElementById('txnList');
+  if(!txns.length){listEl.innerHTML='<div class="bank-empty">No transactions yet</div>';return;}
+  const reversed=[...txns].reverse();
+  listEl.innerHTML=reversed.map(t=>{
+    const isD=t.type==='deposit'||t.type==='set';
+    const dotCol=isD?'var(--grn)':'var(--red)';
+    const amtCls=isD?'dep':'wd';
+    const sign=isD?'＋':'－';
+    return`<div class="txn-row">
+      <div class="txn-dot" style="background:${dotCol}"></div>
+      <div class="txn-info">
+        <div class="txn-narr">${t.narr||'Transaction'}</div>
+        <div class="txn-date">${new Date(t.date).toLocaleDateString('en-GH',{day:'numeric',month:'short',year:'numeric'})}</div>
+        <div class="txn-bal-after">Balance after: ${fB(t.balAfter)}</div>
+      </div>
+      <div>
+        <div class="txn-amt ${amtCls}">${sign}${fB(t.amt)}</div>
+        <button style="background:none;border:none;color:#f5a09a;cursor:pointer;font-size:11px;float:right;margin-top:4px" onclick="deleteTxn(${t.id})">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function doSetBalance(){
+  const amt=parseFloat(document.getElementById('sb-amt').value);
+  const note=document.getElementById('sb-note').value||'Opening balance';
+  if(isNaN(amt)||amt<0){toast('⚠️ Enter a valid amount');return;}
+  const txn={id:Date.now(),type:'set',amt,narr:note,date:today(),balBefore:amt,balAfter:amt};
+  sv(K.b,{balance:amt,txns:[txn]});
+  closeSheet('setbal');
+  document.getElementById('sb-amt').value='';
+  document.getElementById('sb-note').value='';
+  renderBank();
+  toast('🏦 Balance set to '+fB(amt));
+}
+
+function doDeposit(){
+  const amt=parseFloat(document.getElementById('dep-amt').value);
+  const narr=document.getElementById('dep-narr').value||'Deposit';
+  const date=document.getElementById('dep-date').value||today();
+  if(isNaN(amt)||amt<=0){toast('⚠️ Enter a valid amount');return;}
+  const state=getBankState();
+  if(state.balance===undefined){toast('⚠️ Set your balance first');return;}
+  const balBefore=state.balance;
+  const balAfter=balBefore+amt;
+  const txn={id:Date.now(),type:'deposit',amt,narr,date,balBefore,balAfter};
+  state.txns.push(txn);
+  state.balance=balAfter;
+  sv(K.b,state);
+  closeSheet('deposit');
+  document.getElementById('dep-amt').value='';document.getElementById('dep-narr').value='';
+  renderBank();
+  toast('💚 Deposited '+fB(amt));
+}
+
+function doWithdraw(){
+  const amt=parseFloat(document.getElementById('wd-amt').value);
+  const narr=document.getElementById('wd-narr').value||'Withdrawal';
+  const date=document.getElementById('wd-date').value||today();
+  if(isNaN(amt)||amt<=0){toast('⚠️ Enter a valid amount');return;}
+  const state=getBankState();
+  if(state.balance===undefined){toast('⚠️ Set your balance first');return;}
+  const balBefore=state.balance;
+  const balAfter=balBefore-amt;
+  const txn={id:Date.now(),type:'withdraw',amt,narr,date,balBefore,balAfter};
+  state.txns.push(txn);
+  state.balance=balAfter;
+  sv(K.b,state);
+  closeSheet('withdraw');
+  document.getElementById('wd-amt').value='';document.getElementById('wd-narr').value='';
+  renderBank();
+  toast('🔴 Withdrawn '+fB(amt)+' · Balance: '+fB(balAfter));
+}
+
+function deleteTxn(id){
+  const state=getBankState();
+  const idx=state.txns.findIndex(t=>t.id===id);
+  if(idx===-1)return;
+  // recalculate balance by replaying remaining txns
+  state.txns.splice(idx,1);
+  if(!state.txns.length){sv(K.b,{});renderBank();toast('Deleted');return;}
+  // replay from first txn
+  let bal=state.txns[0].balBefore;
+  state.txns.forEach(t=>{
+    t.balBefore=bal;
+    if(t.type==='deposit'||t.type==='set') bal+=t.amt;
+    else bal-=t.amt;
+    t.balAfter=bal;
+  });
+  state.balance=bal;
+  sv(K.b,state);
+  renderBank();
+  toast('Transaction deleted');
+}
+
+// ─── DASHBOARD ─────────────────────────
+function refreshDash(){
+  let tot=0,rev=0,trips=0,good=0,bad=0;const minP=parseFloat(document.getElementById('minP').value)||1000,maxP=parseFloat(document.getElementById('maxP').value)||1300;
+  document.querySelectorAll('.oc').forEach(c=>{const id=parseInt(c.id.replace('oc-',''));const mc=parseFloat(document.getElementById('mc'+id)?.value)||0,fu=parseFloat(document.getElementById('fu'+id)?.value)||0,ot=parseFloat(document.getElementById('ot'+id)?.value)||0,ch=parseFloat(document.getElementById('ch'+id)?.value)||0;const cost=mc+fu+ot,p=ch-cost;if(cost>0||ch>0){trips++;tot+=cost;rev+=ch;if(p>=minP&&p<=maxP)good++;else if(p<minP&&ch>0)bad++;}});
+  const tp=rev-tot;
+  const dpe=document.getElementById('d-profit');dpe.textContent=fG(tp);dpe.style.color=trips===0?'white':tp>0?'#a8dfc0':'#f5a09a';
+  document.getElementById('d-sub').textContent=trips===0?'No trips estimated yet':`From ${trips} trip${trips>1?'s':''} today`;
+  document.getElementById('d-trips').textContent=trips;document.getElementById('d-rev').textContent=fG(rev);
+  document.getElementById('d-good').textContent=good;document.getElementById('d-bad').textContent=bad;
+  renderBank();
+  const snaps=ld(K.sn),sl=document.getElementById('snapList');
+  if(!snaps.length){sl.innerHTML='<div class="es"><div class="ei">📊</div>Tap 💾 above to save a snapshot</div>';return;}
+  sl.innerHTML=snaps.map(s=>{const cls=s.totalP>=0?'var(--grn)':'var(--red)';return`<div class="cw"><div class="ri"><div class="rico" style="background:var(--navy2)">📸</div><div class="rinfo"><div class="rmain">${s.trips} trip${s.trips>1?'s':''} · ${s.good} on target</div><div class="rsub">${s.date}</div></div><div class="rval" style="color:${cls}">${fG(s.totalP)}</div></div></div>`;}).join('');
+}
+
+// ─── FUEL ──────────────────────────────
+function saveFuel(){
+  const date=document.getElementById('f-date').value,cost=parseFloat(document.getElementById('f-cost').value),litres=parseFloat(document.getElementById('f-litres').value),odo=document.getElementById('f-odo').value,note=document.getElementById('f-note').value;
+  if(!date||isNaN(cost)||cost<=0){toast('⚠️ Add date and cost');return;}
+  const r=ld(K.f);r.unshift({id:Date.now(),date,cost,litres:isNaN(litres)?0:litres,odo,note});sv(K.f,r);
+  closeSheet('fuel');toast('⛽ Fuel record saved!');refreshFuel();
+  ['f-date','f-cost','f-litres','f-odo','f-note'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+}
+
+function refreshFuel(){
+  const r=ld(K.f);const now=new Date(),cmk=now.getFullYear()+'-'+(now.getMonth()+1).toString().padStart(2,'0');
+  const total=r.reduce((s,x)=>s+x.cost,0),mspend=r.filter(x=>mk(x.date)===cmk).reduce((s,x)=>s+x.cost,0),avg=r.length?total/r.length:0;
+  const monthly={};r.forEach(x=>{const k=mk(x.date);monthly[k]=(monthly[k]||0)+x.cost;});
+  const mkeys=Object.keys(monthly).sort().reverse();
+  const bestMk=mkeys.length?mkeys.reduce((a,b)=>monthly[a]<monthly[b]?a:b):'';
+  document.getElementById('ft-total').textContent=fG(total);
+  document.getElementById('ft-sub').textContent=r.length?`${r.length} fill-up${r.length>1?'s':''} recorded`:'No records yet';
+  document.getElementById('ft-month').textContent=fG(mspend);document.getElementById('ft-avg').textContent=fG(avg);
+  document.getElementById('ft-count').textContent=r.length;document.getElementById('ft-best').textContent=bestMk?mlbl(bestMk):'—';
+  const ce=document.getElementById('fuelChart');
+  if(!mkeys.length){ce.innerHTML='<div class="es" style="color:var(--muted)">No data yet</div>';}
+  else{const mx=Math.max(...mkeys.map(k=>monthly[k]));ce.innerHTML=mkeys.slice(0,7).map(k=>{const v=monthly[k],p=Math.round((v/mx)*100);return`<div class="brow"><div class="bmo">${mlbl(k).slice(0,3)}</div><div class="btrack"><div class="bfill bfuel" style="width:${p}%"><span class="blbl">${p>25?fN(v):''}</span></div></div><div class="bamt">${fG(v)}</div></div>`;}).join('');}
+  const le=document.getElementById('fuelList');
+  if(!r.length){le.innerHTML='<div class="es"><div class="ei">⛽</div>No fuel records yet. Tap + to add.</div>';return;}
+  le.innerHTML=r.slice(0,30).map(x=>`<div class="cw"><div class="ri"><div class="rico" style="background:var(--blue-bg)">⛽</div><div class="rinfo"><div class="rmain">${x.note||'Fuel fill-up'}${x.litres?' · '+x.litres+'L':''}</div><div class="rsub">${new Date(x.date).toLocaleDateString('en-GH',{day:'numeric',month:'short',year:'numeric'})}${x.odo?' · Odo: '+x.odo+'km':''}</div></div><div style="text-align:right"><div class="rval" style="color:var(--blue)">${fG(x.cost)}</div><button style="background:none;border:none;color:#f5a09a;cursor:pointer;font-size:13px;padding:2px 5px" onclick="delFuel(${x.id})">✕</button></div></div></div>`).join('');
+}
+function delFuel(id){sv(K.f,ld(K.f).filter(x=>x.id!==id));refreshFuel();toast('Deleted');}
+
+// ─── MAINTENANCE ───────────────────────
+function saveMaint(){
+  const item=document.getElementById('m-item').value,date=document.getElementById('m-date').value,cost=parseFloat(document.getElementById('m-cost').value),next=document.getElementById('m-next').value,veh=document.getElementById('m-veh').value,cat=document.getElementById('m-cat').value;
+  if(!item||!date||isNaN(cost)||cost<=0){toast('⚠️ Fill in item, date & cost');return;}
+  const r=ld(K.m);r.unshift({id:Date.now(),item,date,cost,next,veh,cat});sv(K.m,r);
+  closeSheet('maint');toast('🔧 Maintenance saved!');refreshMaint();
+  ['m-item','m-date','m-cost','m-next','m-veh'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+}
+
+function refreshMaint(){
+  const r=ld(K.m);const now=new Date(),cmk=now.getFullYear()+'-'+(now.getMonth()+1).toString().padStart(2,'0');
+  const total=r.reduce((s,x)=>s+x.cost,0),mspend=r.filter(x=>mk(x.date)===cmk).reduce((s,x)=>s+x.cost,0);
+  const upcoming=r.filter(x=>x.next&&due(x.next)>=0&&due(x.next)<=30),overdue=r.filter(x=>x.next&&due(x.next)<0);
+  document.getElementById('mt-total').textContent=fG(total);
+  document.getElementById('mt-sub').textContent=r.length?`${r.length} record${r.length>1?'s':''} · ${overdue.length} overdue`:'No records yet';
+  document.getElementById('mt-month').textContent=fG(mspend);document.getElementById('mt-due').textContent=upcoming.length;
+  document.getElementById('mt-done').textContent=r.length;document.getElementById('mt-over').textContent=overdue.length;
+  const de=document.getElementById('maintDue');
+  const dueItems=[...overdue,...upcoming].sort((a,b)=>due(a.next)-due(b.next));
+  if(!dueItems.length){de.innerHTML='<div class="es"><div class="ei">✅</div>All clear! No upcoming maintenance.</div>';}
+  else{de.innerHTML=dueItems.map(x=>{const d2=due(x.next),isO=d2<0,cls=isO?'pr':d2<=7?'pa':'pb',lbl=isO?`${Math.abs(d2)}d overdue`:d2===0?'Due today':`${d2}d left`,bg=isO?'#fdf0ef':d2<=7?'#fffbeb':'#eff6ff';return`<div class="duc"><div class="duico" style="background:${bg}">${ICONS[x.cat]||'🔧'}</div><div class="dui"><div class="dut">${x.item}</div><div class="dud">${x.veh||''}${x.veh&&x.next?' · ':''}${x.next?'Next: '+new Date(x.next).toLocaleDateString('en-GH',{day:'numeric',month:'short'}):''}</div><div class="duc2">${fG(x.cost)} · ${x.cat}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px"><span class="pill ${cls}">${lbl}</span><button style="background:none;border:none;color:#f5a09a;cursor:pointer;font-size:12px" onclick="delMaint(${x.id})">✕</button></div></div>`;}).join('');}
+  const ae=document.getElementById('maintAll');
+  if(!r.length){ae.innerHTML='<div class="es"><div class="ei">🔧</div>No records yet. Tap + to add.</div>';return;}
+  ae.innerHTML=r.map(x=>`<div class="cw"><div class="ri"><div class="rico" style="background:#fff8ee">${ICONS[x.cat]||'🔧'}</div><div class="rinfo"><div class="rmain">${x.item}${x.veh?' · '+x.veh:''}</div><div class="rsub">${new Date(x.date).toLocaleDateString('en-GH',{day:'numeric',month:'short',year:'numeric'})}${x.next?' · Next: '+new Date(x.next).toLocaleDateString('en-GH',{day:'numeric',month:'short'}):''}</div></div><div style="text-align:right"><div class="rval" style="color:var(--gold)">${fG(x.cost)}</div><button style="background:none;border:none;color:#f5a09a;cursor:pointer;font-size:13px;padding:2px 5px" onclick="delMaint(${x.id})">✕</button></div></div></div>`).join('');
+}
+function delMaint(id){sv(K.m,ld(K.m).filter(x=>x.id!==id));refreshMaint();toast('Deleted');}
+
+// ─── EXPENSES ──────────────────────────
+function saveExpense(){
+  const item=document.getElementById('e-item').value,date=document.getElementById('e-date').value,amt=parseFloat(document.getElementById('e-amt').value),cat=document.getElementById('e-cat').value,note=document.getElementById('e-note').value;
+  if(!item||!date||isNaN(amt)||amt<=0){toast('⚠️ Fill in item, date & amount');return;}
+  const r=ld(K.e);r.unshift({id:Date.now(),item,date,amt,cat,note});sv(K.e,r);
+  closeSheet('expense');toast('📦 Expense saved!');refreshExp();
+  ['e-item','e-date','e-amt','e-note'].forEach(i=>{const e=document.getElementById(i);if(e)e.value='';});
+}
+
+function refreshExp(){
+  const r=ld(K.e);const now=new Date(),cy=now.getFullYear(),cmk=cy+'-'+(now.getMonth()+1).toString().padStart(2,'0');
+  const total=r.reduce((s,x)=>s+x.amt,0),mspend=r.filter(x=>mk(x.date)===cmk).reduce((s,x)=>s+x.amt,0),yspend=r.filter(x=>new Date(x.date).getFullYear()===cy).reduce((s,x)=>s+x.amt,0);
+  const cats={};r.forEach(x=>{cats[x.cat]=(cats[x.cat]||0)+x.amt;});
+  const topCat=Object.keys(cats).sort((a,b)=>cats[b]-cats[a])[0]||'—';
+  document.getElementById('ex-total').textContent=fG(total);
+  document.getElementById('ex-sub').textContent=r.length?`${r.length} expense${r.length>1?'s':''} recorded`:'All categories';
+  document.getElementById('ex-month').textContent=fG(mspend);document.getElementById('ex-year').textContent=fG(yspend);
+  document.getElementById('ex-count').textContent=r.length;document.getElementById('ex-top').textContent=topCat;
+  const ce=document.getElementById('expCats');
+  if(!Object.keys(cats).length){ce.innerHTML='<div class="es"><div class="ei">📦</div>No expenses yet</div>';}
+  else{const sorted=Object.keys(cats).sort((a,b)=>cats[b]-cats[a]),mx=cats[sorted[0]];ce.innerHTML='<div class="cw">'+sorted.map(cat=>{const p=Math.round((cats[cat]/mx)*100);return`<div class="ri"><div class="rico" style="background:var(--silver)">${ICONS[cat]||'📦'}</div><div class="rinfo"><div class="rmain">${cat}</div><div style="margin-top:4px;background:var(--line);border-radius:3px;height:5px;overflow:hidden"><div style="width:${p}%;height:100%;background:var(--gold);border-radius:3px"></div></div></div><div class="rval" style="color:var(--gold)">${fG(cats[cat])}</div></div>`;}).join('')+'</div>';}
+  const monthly={};r.forEach(x=>{const k=mk(x.date);monthly[k]=(monthly[k]||0)+x.amt;});
+  const mkeys=Object.keys(monthly).sort().reverse(),chartEl=document.getElementById('expChart');
+  if(!mkeys.length){chartEl.innerHTML='<div class="es" style="color:var(--muted)">No data yet</div>';}
+  else{const mx=Math.max(...mkeys.map(k=>monthly[k]));chartEl.innerHTML=mkeys.slice(0,7).map(k=>{const v=monthly[k],p=Math.round((v/mx)*100);return`<div class="brow"><div class="bmo">${mlbl(k).slice(0,3)}</div><div class="btrack"><div class="bfill bexp" style="width:${p}%"><span class="blbl">${p>25?fN(v):''}</span></div></div><div class="bamt">${fG(v)}</div></div>`;}).join('');}
+  const le=document.getElementById('expList');
+  if(!r.length){le.innerHTML='<div class="es"><div class="ei">💸</div>No expenses recorded. Tap + to add.</div>';return;}
+  le.innerHTML=r.slice(0,30).map(x=>`<div class="cw"><div class="ri"><div class="rico" style="background:var(--silver)">${ICONS[x.cat]||'📦'}</div><div class="rinfo"><div class="rmain">${x.item}</div><div class="rsub">${new Date(x.date).toLocaleDateString('en-GH',{day:'numeric',month:'short',year:'numeric'})} · ${x.cat}</div></div><div style="text-align:right"><div class="rval">${fG(x.amt)}</div><button style="background:none;border:none;color:#f5a09a;cursor:pointer;font-size:13px;padding:2px 5px" onclick="delExp(${x.id})">✕</button></div></div></div>`).join('');
+}
+function delExp(id){sv(K.e,ld(K.e).filter(x=>x.id!==id));refreshExp();toast('Deleted');}
+
+// ─── FUEL CALCULATOR ───────────────────
+// Howo 371 official consumption data (L/100km)
+const HOWO = { full: 34, half: 23.8, empty: 13.9 };
+let fcUnit = 'km', fcLoad = 'full';
+
+function setUnit(u) {
+  fcUnit = u;
+  document.getElementById('btn-km').classList.toggle('active', u==='km');
+  document.getElementById('btn-mi').classList.toggle('active', u==='mi');
+  document.getElementById('fc-unit-tag').textContent = u;
+  // convert existing value
+  const inp = document.getElementById('fc-dist');
+  if(inp.value) {
+    const v = parseFloat(inp.value);
+    if(!isNaN(v)) inp.value = u==='mi' ? (v/1.60934).toFixed(1) : (v*1.60934).toFixed(1);
+  }
+  calcFuel();
+}
+
+function setLoad(l) {
+  fcLoad = l;
+  document.querySelectorAll('.fc-load-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('load-'+l).classList.add('active');
+  calcFuel();
+}
+
+function calcFuel() {
+  const distRaw = parseFloat(document.getElementById('fc-dist').value);
+  const priceRaw = parseFloat(document.getElementById('fc-price').value);
+  const resEl = document.getElementById('fc-results');
+
+  if(isNaN(distRaw) || distRaw <= 0) { resEl.style.display='none'; return; }
+
+  // convert miles to km for calculation
+  const distKm = fcUnit === 'mi' ? distRaw * 1.60934 : distRaw;
+  const rate = HOWO[fcLoad]; // L/100km
+  const litres = (distKm / 100) * rate;
+  const returnLitres = litres * 2; // round trip
+
+  document.getElementById('fc-litres').textContent = litres.toFixed(1);
+  document.getElementById('fc-return').textContent = returnLitres.toFixed(1);
+
+  const costBox = document.getElementById('fc-cost-box');
+  if(!isNaN(priceRaw) && priceRaw > 0) {
+    const cost = litres * priceRaw;
+    document.getElementById('fc-cost').textContent = cost.toFixed(2);
+    costBox.style.display = '';
+  } else {
+    costBox.style.display = 'none';
+  }
+
+  // tip
+  const loadLabel = fcLoad==='full'?'fully loaded':fcLoad==='half'?'half loaded':'empty';
+  const distLabel = fcUnit==='mi' ? `${distRaw.toFixed(0)} miles (${distKm.toFixed(0)} km)` : `${distRaw.toFixed(0)} km`;
+  document.getElementById('fc-tip').textContent =
+    `At ${rate} L/100km (${loadLabel}), your Howo 371 needs ${litres.toFixed(1)}L for ${distLabel}. ` +
+    (returnLitres > 0 ? `Budget ${returnLitres.toFixed(1)}L for a return trip.` : '');
+
+  resEl.style.display = '';
+}
+
+// set default load on page load
+document.getElementById('load-full').classList.add('active');
+
+// ─── BOOT ──────────────────────────────
+bootApp();
+
+</script>
+</body>
+</html>
